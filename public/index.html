@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | ChatConnect</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#137fec",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101922",
+          },
+          fontFamily: {
+            display: ["Plus Jakarta Sans", "sans-serif"]
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+        },
+      },
+    }
+  </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex items-center justify-center p-4 md:p-6">
+
+  <div class="w-full max-w-md">
+
+    <div class="bg-white dark:bg-slate-900 shadow-xl rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+
+      <!-- Main content area -->
+      <div class="p-8 md:p-10">
+        <div class="flex flex-col items-center mb-10">
+          <div class="bg-primary/10 dark:bg-primary/20 p-4 rounded-2xl mb-5 text-primary">
+            <span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1, 'wght' 400">
+              chat_bubble
+            </span>
+          </div>
+          <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            ChatConnect
+          </h1>
+          <p class="text-slate-500 dark:text-slate-400 mt-2 text-center">
+            Welcome back, please sign in
+          </p>
+        </div>
+
+        <form class="space-y-6" id="login-form">
+          <!-- Email -->
+          <div class="space-y-2">
+            <label for="email" class="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+              Email Address
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">
+                mail
+              </span>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="name@company.com"
+                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center px-1">
+              <label for="password" class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Password
+              </label>
+              <a href="#" class="text-xs font-medium text-primary hover:underline">
+                Forgot password?
+              </a>
+            </div>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl pointer-events-none">
+                lock
+              </span>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="••••••••"
+                class="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all outline-none"
+              />
+              <button
+                type="button"
+                class="toggle-password absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none"
+                aria-label="Toggle password visibility"
+              >
+                <span class="material-symbols-outlined text-xl">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember me -->
+          <div class="flex items-center space-x-2 px-1">
+            <input
+              id="remember"
+              name="remember"
+              type="checkbox"
+              class="w-4 h-4 text-primary bg-slate-100 border-slate-300 rounded focus:ring-primary dark:bg-slate-700 dark:border-slate-600"
+            />
+            <label for="remember" class="text-sm text-slate-600 dark:text-slate-400 select-none">
+              Stay logged in for 30 days
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="w-full bg-primary hover:bg-primary/90 active:bg-primary/80 text-white font-semibold py-3.5 rounded-lg shadow-lg shadow-primary/25 transition-all duration-150 transform active:scale-[0.98]"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer / Sign up link -->
+      <div class="bg-slate-50 dark:bg-slate-800/50 px-8 py-6 text-center border-t border-slate-200 dark:border-slate-800">
+        <p class="text-slate-600 dark:text-slate-400 text-sm">
+          Don't have an account?
+          <a href="register.html" class="text-primary font-semibold hover:underline ml-1">
+            Sign up for free
+          </a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Optional: simple show/hide password script -->
+  <script>
+    document.querySelector('.toggle-password')?.addEventListener('click', function () {
+      const input = this.previousElementSibling;
+      const icon = this.querySelector('span');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    });
+  </script>
+<script src="assets/js/login.js"></script>
+</body>
+</html>

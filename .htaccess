@@ -1,0 +1,16 @@
+# Disable directory listing
+Options -Indexes
+
+# Block access to sensitive folders
+<DirectoryMatch "^.*/(config|includes|storage)/">
+    Require all denied
+</DirectoryMatch>
+
+# Optional: block direct GET to API files
+<FilesMatch "^(login|register|logout)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Security headers
+Header always set X-Frame-Options "DENY"
+Header always set X-Content-Type-Options "nosniff"
