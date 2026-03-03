@@ -1,7 +1,6 @@
 <?php
-require_once "../config/database.php"; // Your PDO connection
-
-session_start();
+require_once "../config/database.php";
+require_once "../includes/session.php";
 
 // Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
@@ -9,12 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Fetch current user info
-$stmt = $pdo->prepare("
-    SELECT id, full_name, email, created_at, profile_image 
-    FROM users 
-    WHERE id = ?
-");
+// Fetch current user
+$stmt = $pdo->prepare("SELECT id, full_name, email, created_at, profile_image FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -24,66 +19,52 @@ if (!$user) {
     exit;
 }
 
-// ────────────────────────────────────────────────
-// Fetch recent conversations with last message & other participant info
-// ────────────────────────────────────────────────
+// Mark user as online
+$pdo->prepare("UPDATE users SET is_online = 1, last_seen = NOW() WHERE id = ?")->execute([$_SESSION['user_id']]);
 
 $currentUserId = $_SESSION['user_id'];
 
+// Fetch recent conversations with last message, partner info, and unread count
 $stmt = $pdo->prepare("
-    SELECT 
+    SELECT
         c.id AS conversation_id,
         c.is_group,
-        COALESCE(c.name, CONCAT('Chat with ', u_other.full_name)) AS name,
-        u_other.full_name AS other_user_name,
+        c.name,
+        u_other.full_name   AS other_user_name,
         u_other.profile_image AS other_user_image,
-        m.content AS last_message,
-        m.created_at AS last_message_time
+        u_other.is_online   AS other_user_online,
+        m.content           AS last_message,
+        m.created_at        AS last_message_time,
+        (
+            SELECT COUNT(*) FROM messages mu
+            WHERE mu.conversation_id = c.id
+              AND mu.sender_id != :uid1
+              AND mu.is_read = 0
+        ) AS unread_count
     FROM conversations c
-    
-    -- Join participants to find the OTHER user (not current user)
-    INNER JOIN participants p_other 
-        ON p_other.conversation_id = c.id 
-        AND p_other.user_id != :current_user_id
-    
-    LEFT JOIN users u_other 
-        ON u_other.id = p_other.user_id
-    
-    -- Get the most recent message per conversation
+
+    -- The other participant
+    INNER JOIN participants p_other
+        ON p_other.conversation_id = c.id
+        AND p_other.user_id != :uid2
+    LEFT JOIN users u_other ON u_other.id = p_other.user_id
+
+    -- Latest message
     LEFT JOIN (
         SELECT conversation_id, content, created_at,
                ROW_NUMBER() OVER (PARTITION BY conversation_id ORDER BY created_at DESC) AS rn
         FROM messages
     ) m ON m.conversation_id = c.id AND m.rn = 1
-    
-    -- Only conversations where current user is a participant
+
+    -- Only conversations current user is in
     WHERE EXISTS (
-        SELECT 1 
-        FROM participants p_self 
-        WHERE p_self.conversation_id = c.id 
-          AND p_self.user_id = :current_user_id
+        SELECT 1 FROM participants p_self
+        WHERE p_self.conversation_id = c.id AND p_self.user_id = :uid3
     )
-    
+
     ORDER BY COALESCE(m.created_at, c.created_at) DESC
     LIMIT 30
 ");
 
-$stmt->execute(['current_user_id' => $currentUserId]);
-
+$stmt->execute(['uid1' => $currentUserId, 'uid2' => $currentUserId, 'uid3' => $currentUserId]);
 $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
-
-// If no conversations exist yet, you can optionally add fallback dummy ones (for onboarding/testing)
-// But ideally remove this once real data flows
-if (empty($conversations)) {
-    $conversations = [
-        // Optional: keep 1–2 dummies during early development
-        [
-            'name'              => 'Welcome to ChatConnect',
-            'other_user_name'   => 'Team',
-            'other_user_image'  => null,
-            'last_message'      => 'Start your first conversation!',
-            'last_message_time' => date('Y-m-d H:i:s'),
-            'is_group'          => true,
-        ]
-    ];
-}
